@@ -24,7 +24,7 @@ copy_host_gh_config() {
         fi
 
         if [ -f "${source_path}" ] && [ ! -e "${target_path}" ]; then
-            install -D -m "$(stat -c '%a' "${source_path}")" "${source_path}" "${target_path}"
+            install -D -m 644 "${source_path}" "${target_path}"
             copied_paths+=("${target_path}")
         fi
     done
