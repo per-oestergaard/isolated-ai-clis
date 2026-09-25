@@ -1,6 +1,6 @@
 FROM mcr.microsoft.com/devcontainers/base:ubuntu
 
-ARG GH_COPILOT_VERSION=v1.2.0
+ARG GH_COPILOT_VERSION=1.2.0
 
 ENV DEBIAN_FRONTEND=noninteractive \
     GH_CONFIG_DIR=/home/vscode/.config/gh
@@ -23,6 +23,8 @@ COPY docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
 RUN chmod 755 /usr/local/bin/docker-entrypoint.sh \
     && mkdir -p /home/vscode/.config/gh \
     && arch="$(dpkg --print-architecture)" \
+    && gh_copilot_version="${GH_COPILOT_VERSION#v}" \
+    && gh_copilot_tag="v${gh_copilot_version}" \
     && case "${arch}" in \
         amd64) gh_copilot_asset="linux-amd64" ;; \
         arm64) gh_copilot_asset="linux-arm64" ;; \
@@ -31,7 +33,7 @@ RUN chmod 755 /usr/local/bin/docker-entrypoint.sh \
        esac \
     && mkdir -p /home/vscode/.local/share/gh/extensions/gh-copilot \
     && gh_copilot_download="$(mktemp)" \
-    && curl -fsSL "https://github.com/github/gh-copilot/releases/download/${GH_COPILOT_VERSION}/${gh_copilot_asset}" \
+    && curl -fsSL "https://github.com/github/gh-copilot/releases/download/${gh_copilot_tag}/${gh_copilot_asset}" \
         -o "${gh_copilot_download}" \
     && if gzip -t "${gh_copilot_download}" 2>/dev/null; then \
            gzip -dc "${gh_copilot_download}" > /home/vscode/.local/share/gh/extensions/gh-copilot/gh-copilot; \

@@ -26,7 +26,7 @@ copy_host_gh_config() {
             mkdir -p "${target_path}"
         elif [ -f "${source_path}" ] && [ ! -e "${target_path}" ]; then
             mkdir -p "$(dirname "${target_path}")"
-            install -m 600 "${source_path}" "${target_path}"
+            install -m "$(stat -c '%a' "${source_path}")" "${source_path}" "${target_path}"
         fi
     done < <(cd "${source_dir}" && find . -mindepth 1 | sort)
 }
