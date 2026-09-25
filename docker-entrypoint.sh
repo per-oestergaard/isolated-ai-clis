@@ -4,10 +4,10 @@ set -euo pipefail
 host_gh_config_dir="${HOST_GH_CONFIG_DIR:-/host-gh}"
 gh_config_dir="${GH_CONFIG_DIR:-$HOME/.config/gh}"
 runtime_user="${CONTAINER_RUN_USER:-vscode}"
+host_gh_config_available=false
 
 if [ -d "${host_gh_config_dir}" ] && [ -n "$(find "${host_gh_config_dir}" -mindepth 1 -maxdepth 1 -print -quit 2>/dev/null)" ]; then
-    mkdir -p "${gh_config_dir}"
-    cp -R --update=none "${host_gh_config_dir}/." "${gh_config_dir}/"
+    host_gh_config_available=true
 fi
 
 if [ "$#" -eq 0 ]; then
@@ -15,9 +15,17 @@ if [ "$#" -eq 0 ]; then
 fi
 
 if [ "$(id -u)" -eq 0 ] && id "${runtime_user}" >/dev/null 2>&1; then
-    mkdir -p "${gh_config_dir}"
-    chown -R "${runtime_user}:${runtime_user}" "${gh_config_dir}"
+    install -d -m 755 -o "${runtime_user}" -g "${runtime_user}" "${gh_config_dir}"
+    if [ "${host_gh_config_available}" = true ]; then
+        cp -R --update=none "${host_gh_config_dir}/." "${gh_config_dir}/"
+        chown -R "${runtime_user}:${runtime_user}" "${gh_config_dir}"
+    fi
     exec sudo -E -H -u "${runtime_user}" -- "$@"
+fi
+
+if [ "${host_gh_config_available}" = true ]; then
+    mkdir -p "${gh_config_dir}"
+    cp -R --update=none "${host_gh_config_dir}/." "${gh_config_dir}/"
 fi
 
 exec "$@"
