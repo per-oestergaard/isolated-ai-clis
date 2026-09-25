@@ -57,7 +57,9 @@ if [ "$(id -u)" -eq 0 ] && id "${runtime_user}" >/dev/null 2>&1; then
         fi
     fi
     if [ "${host_gh_config_available}" = true ]; then
-        copied_files="$(copy_host_gh_config "${host_gh_config_dir}" "${gh_config_dir}")"
+        if ! copied_files="$(copy_host_gh_config "${host_gh_config_dir}" "${gh_config_dir}")"; then
+            exit 1
+        fi
         if [ -n "${copied_files}" ] && ([ "${created_gh_config_dir}" = true ] || [ "${gh_config_dir}" = "${default_gh_config_dir}" ]); then
             while IFS= read -r copied_file; do
                 [ -n "${copied_file}" ] || continue
