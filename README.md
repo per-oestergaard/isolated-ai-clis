@@ -11,6 +11,8 @@ docker build -t local/isolated-ai-clis .
 
 The image entrypoint runs whichever CLI command you pass in:
 
+`gh copilot ...` commands require GitHub CLI auth first. Use one of the auth options in the next section before running Copilot commands in a fresh container.
+
 ```bash
 docker run -it --rm local/isolated-ai-clis gh --version
 docker run -it --rm local/isolated-ai-clis gh copilot suggest -t shell "list all files"

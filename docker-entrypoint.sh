@@ -12,6 +12,7 @@ copy_host_gh_config() {
     local allowed_file
     local source_path
     local target_path
+    local copied_paths=()
 
     for allowed_file in hosts.yml config.yml; do
         source_path="${source_dir}/${allowed_file}"
@@ -24,8 +25,11 @@ copy_host_gh_config() {
 
         if [ -f "${source_path}" ] && [ ! -e "${target_path}" ]; then
             install -D -m "$(stat -c '%a' "${source_path}")" "${source_path}" "${target_path}"
+            copied_paths+=("${target_path}")
         fi
     done
+
+    printf '%s\n' "${copied_paths[@]}"
 }
 
 if [ -d "${host_gh_config_dir}" ] && [ -n "$(find "${host_gh_config_dir}" -mindepth 1 -maxdepth 1 -print -quit 2>/dev/null)" ]; then
@@ -37,10 +41,16 @@ if [ "$#" -eq 0 ]; then
 fi
 
 if [ "$(id -u)" -eq 0 ] && id "${runtime_user}" >/dev/null 2>&1; then
+    copied_files=""
     install -d -m 755 -o "${runtime_user}" -g "${runtime_user}" "${gh_config_dir}"
     if [ "${host_gh_config_available}" = true ]; then
-        copy_host_gh_config "${host_gh_config_dir}" "${gh_config_dir}"
-        chown -R "${runtime_user}:${runtime_user}" "${gh_config_dir}"
+        copied_files="$(copy_host_gh_config "${host_gh_config_dir}" "${gh_config_dir}")"
+        if [ -n "${copied_files}" ]; then
+            while IFS= read -r copied_file; do
+                [ -n "${copied_file}" ] || continue
+                chown "${runtime_user}:${runtime_user}" "${copied_file}"
+            done <<< "${copied_files}"
+        fi
     fi
     exec sudo -E -H -u "${runtime_user}" -- "$@"
 fi
