@@ -29,7 +29,9 @@ copy_host_gh_config() {
         fi
     done
 
-    printf '%s\n' "${copied_paths[@]}"
+    if [ "${#copied_paths[@]}" -gt 0 ]; then
+        printf '%s\n' "${copied_paths[@]}"
+    fi
 }
 
 if [ -d "${host_gh_config_dir}" ] && [ -n "$(find "${host_gh_config_dir}" -mindepth 1 -maxdepth 1 -print -quit 2>/dev/null)" ]; then

@@ -37,10 +37,10 @@ RUN chmod 755 /usr/local/bin/docker-entrypoint.sh \
         -o "${gh_copilot_download}" \
     && if gzip -t "${gh_copilot_download}" 2>/dev/null; then \
            gzip -dc "${gh_copilot_download}" > /home/vscode/.local/share/gh/extensions/gh-copilot/gh-copilot; \
+           rm -f "${gh_copilot_download}"; \
        else \
            mv "${gh_copilot_download}" /home/vscode/.local/share/gh/extensions/gh-copilot/gh-copilot; \
        fi \
-    && rm -f "${gh_copilot_download}" \
     && chmod 755 /home/vscode/.local/share/gh/extensions/gh-copilot/gh-copilot \
     && chown -R vscode:vscode /home/vscode/.config /home/vscode/.local
 
