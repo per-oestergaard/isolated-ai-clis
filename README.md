@@ -1,2 +1,45 @@
 # isolated-ai-clis
 gh copilot, claude - without polluting my local machine
+
+## Build the image
+
+```bash
+docker build -t local/isolated-ai-clis .
+```
+
+## Run the CLIs
+
+The image entrypoint runs whichever CLI command you pass in:
+
+```bash
+docker run -it --rm local/isolated-ai-clis gh --version
+docker run -it --rm local/isolated-ai-clis gh copilot suggest -t shell "list all files"
+docker run -it --rm local/isolated-ai-clis claude
+```
+
+## GitHub auth
+
+The container prefers a host-mounted GitHub CLI config at `/host-gh`. If that mount is not present, it uses the normal `GH_CONFIG_DIR` inside the container.
+
+For a plain `docker run`, mount whichever auth source you prefer:
+
+```bash
+# Reuse the host gh auth
+docker run -it --rm \
+  -v "$HOME/.config/gh:/host-gh:ro" \
+  local/isolated-ai-clis gh auth status
+
+# Or persist auth in a Docker volume
+docker run -it --rm \
+  -v isolated-ai-clis-gh:/home/vscode/.config/gh \
+  local/isolated-ai-clis gh auth login
+```
+
+## Devcontainer
+
+`.devcontainer/devcontainer.json` builds from the same `Dockerfile` and mounts:
+
+- your host `~/.config/gh` read-only at `/host-gh`
+- a named Docker volume at `/home/vscode/.config/gh`
+
+That lets the container seed the writable GH config from the host when available, while still working with a Docker-managed volume when it is not.
