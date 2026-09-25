@@ -34,7 +34,7 @@ copy_host_gh_config() {
     fi
 }
 
-if [ -d "${host_gh_config_dir}" ] && [ -n "$(find "${host_gh_config_dir}" -mindepth 1 -maxdepth 1 -print -quit 2>/dev/null)" ]; then
+if [ -f "${host_gh_config_dir}/hosts.yml" ] || [ -f "${host_gh_config_dir}/config.yml" ]; then
     host_gh_config_available=true
 fi
 
