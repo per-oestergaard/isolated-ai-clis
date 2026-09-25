@@ -34,7 +34,8 @@ copy_host_gh_config() {
     fi
 }
 
-if [ -f "${host_gh_config_dir}/hosts.yml" ] || [ -f "${host_gh_config_dir}/config.yml" ]; then
+if [ -e "${host_gh_config_dir}/hosts.yml" ] || [ -L "${host_gh_config_dir}/hosts.yml" ] \
+    || [ -e "${host_gh_config_dir}/config.yml" ] || [ -L "${host_gh_config_dir}/config.yml" ]; then
     host_gh_config_available=true
 fi
 
