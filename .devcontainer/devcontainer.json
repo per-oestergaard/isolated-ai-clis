@@ -1,0 +1,15 @@
+{
+  "name": "isolated-ai-clis",
+  "build": {
+    "context": "..",
+    "dockerfile": "../Dockerfile"
+  },
+  "remoteUser": "vscode",
+  "containerEnv": {
+    "HOST_GH_CONFIG_DIR": "/host-home/.config/gh"
+  },
+  "mounts": [
+    "source=${localEnv:HOME},target=/host-home,type=bind,readonly",
+    "source=isolated-ai-clis-gh-config,target=/home/vscode/.config/gh,type=volume"
+  ]
+}
