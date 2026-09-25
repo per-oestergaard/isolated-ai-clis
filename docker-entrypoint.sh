@@ -73,7 +73,7 @@ if [ "$(id -u)" -eq 0 ] && id "${runtime_user}" >/dev/null 2>&1; then
 fi
 
 if [ "${host_gh_config_available}" = true ]; then
-    mkdir -p "${gh_config_dir}"
+    install -d -m 755 "${gh_config_dir}"
     copy_host_gh_config "${host_gh_config_dir}" "${gh_config_dir}"
 fi
 
