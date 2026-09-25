@@ -19,7 +19,7 @@ docker run -it --rm local/isolated-ai-clis claude
 
 ## GitHub auth
 
-The container prefers a host-mounted GitHub CLI config at `/host-gh`. If that mount is not present, it uses the normal `GH_CONFIG_DIR` inside the container.
+The container prefers a non-empty host-mounted GitHub CLI config at `/host-gh`. If that mount is absent or empty, it uses the normal `GH_CONFIG_DIR` inside the container.
 
 For a plain `docker run`, mount whichever auth source you prefer:
 
