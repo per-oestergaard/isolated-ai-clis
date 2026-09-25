@@ -46,13 +46,17 @@ fi
 
 if [ "$(id -u)" -eq 0 ] && id "${runtime_user}" >/dev/null 2>&1; then
     copied_files=""
+    created_gh_config_dir=false
+    if [ ! -d "${gh_config_dir}" ]; then
+        created_gh_config_dir=true
+    fi
     install -d -m 755 -o "${runtime_user}" -g "${runtime_user}" "${gh_config_dir}"
-    if [ "${gh_config_dir}" = "${default_gh_config_dir}" ]; then
+    if [ "${created_gh_config_dir}" = true ] || [ "${gh_config_dir}" = "${default_gh_config_dir}" ]; then
         chown "${runtime_user}:${runtime_user}" "${gh_config_dir}"
     fi
     if [ "${host_gh_config_available}" = true ]; then
         copied_files="$(copy_host_gh_config "${host_gh_config_dir}" "${gh_config_dir}")"
-        if [ -n "${copied_files}" ] && [ "${gh_config_dir}" = "${default_gh_config_dir}" ]; then
+        if [ -n "${copied_files}" ] && ([ "${created_gh_config_dir}" = true ] || [ "${gh_config_dir}" = "${default_gh_config_dir}" ]); then
             while IFS= read -r copied_file; do
                 [ -n "${copied_file}" ] || continue
                 chown "${runtime_user}:${runtime_user}" "${copied_file}"
