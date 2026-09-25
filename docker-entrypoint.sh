@@ -9,26 +9,23 @@ host_gh_config_available=false
 copy_host_gh_config() {
     local source_dir="$1"
     local target_dir="$2"
-    local relative_path
+    local allowed_file
     local source_path
     local target_path
 
-    if find "${source_dir}" -type l -print -quit | grep -q .; then
-        echo "Refusing to seed GitHub CLI config from ${source_dir}: symlinks are not allowed." >&2
-        exit 1
-    fi
+    for allowed_file in hosts.yml config.yml; do
+        source_path="${source_dir}/${allowed_file}"
+        target_path="${target_dir}/${allowed_file}"
 
-    while IFS= read -r relative_path; do
-        source_path="${source_dir}/${relative_path}"
-        target_path="${target_dir}/${relative_path}"
-
-        if [ -d "${source_path}" ]; then
-            mkdir -p "${target_path}"
-        elif [ -f "${source_path}" ] && [ ! -e "${target_path}" ]; then
-            mkdir -p "$(dirname "${target_path}")"
-            install -m "$(stat -c '%a' "${source_path}")" "${source_path}" "${target_path}"
+        if [ -L "${source_path}" ]; then
+            echo "Refusing to seed GitHub CLI config from ${source_dir}: ${allowed_file} must not be a symlink." >&2
+            exit 1
         fi
-    done < <(cd "${source_dir}" && find . -mindepth 1 | sort)
+
+        if [ -f "${source_path}" ] && [ ! -e "${target_path}" ]; then
+            install -D -m "$(stat -c '%a' "${source_path}")" "${source_path}" "${target_path}"
+        fi
+    done
 }
 
 if [ -d "${host_gh_config_dir}" ] && [ -n "$(find "${host_gh_config_dir}" -mindepth 1 -maxdepth 1 -print -quit 2>/dev/null)" ]; then
