@@ -7,7 +7,7 @@ runtime_user="${CONTAINER_RUN_USER:-vscode}"
 
 if [ -d "${host_gh_config_dir}" ] && [ -n "$(find "${host_gh_config_dir}" -mindepth 1 -maxdepth 1 -print -quit 2>/dev/null)" ]; then
     mkdir -p "${gh_config_dir}"
-    cp -R --update=none "${host_gh_config_dir}/." "${gh_config_dir}/" || true
+    cp -R --update=none "${host_gh_config_dir}/." "${gh_config_dir}/"
 fi
 
 if [ "$#" -eq 0 ]; then
