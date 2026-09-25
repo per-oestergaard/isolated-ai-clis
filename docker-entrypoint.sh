@@ -46,6 +46,7 @@ fi
 if [ "$(id -u)" -eq 0 ] && id "${runtime_user}" >/dev/null 2>&1; then
     copied_files=""
     install -d -m 755 -o "${runtime_user}" -g "${runtime_user}" "${gh_config_dir}"
+    chown "${runtime_user}:${runtime_user}" "${gh_config_dir}"
     if [ "${host_gh_config_available}" = true ]; then
         copied_files="$(copy_host_gh_config "${host_gh_config_dir}" "${gh_config_dir}")"
         if [ -n "${copied_files}" ]; then
